@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * 架构图渲染脚本：docs/diagrams/src/*.mmd → docs/images/<name>.svg + 2x .png
- * 依赖：mermaid-cli（安装于 <project>/temp/render-tools），本机 Chrome。
- * 用法：node docs/tools/render.mjs [单个文件名.mmd] [--svg-only]
+ * Render architecture diagrams: docs/diagrams/src/*.mmd -> SVG and 2x PNG in docs/images/.
+ * Requires mermaid-cli in <project>/temp/render-tools and a local Chrome installation.
+ * Usage: node docs/tools/render.mjs [filename.mmd] [--svg-only]
  */
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
@@ -14,7 +14,7 @@ const DOCS = resolve(__dirname, "..");
 const PROJECT = resolve(DOCS, "..");
 const SRC_DIR = join(DOCS, "diagrams", "src");
 const OUT_DIR = join(DOCS, "images");
-const CLI = join(PROJECT, "temp", "render-tools", "node_modules", "@mermaid-js", "mermaid-cli", "src", "cli.js");
+const CLI = process.env.MERMAID_CLI_PATH ?? join(PROJECT, "temp", "render-tools", "node_modules", "@mermaid-js", "mermaid-cli", "src", "cli.js");
 const CONFIG = join(__dirname, "mermaid-config.json");
 const PUPPETEER_CONFIG = join(__dirname, "puppeteer-config.json");
 const TARGET_WIDTH = 1400;
@@ -23,8 +23,8 @@ const arg = process.argv[2];
 const svgOnly = process.argv.includes("--svg-only");
 
 if (!existsSync(CLI)) {
-  console.error("找不到 mermaid-cli：" + CLI);
-  console.error("请先在项目根目录安装：PUPPETEER_SKIP_DOWNLOAD=true <pnpm> --dir temp/render-tools add @mermaid-js/mermaid-cli");
+  console.error("Cannot find mermaid-cli: " + CLI);
+  console.error("Install first: npm install --prefix temp/render-tools --ignore-scripts @mermaid-js/mermaid-cli");
   process.exit(1);
 }
 mkdirSync(OUT_DIR, { recursive: true });
@@ -32,7 +32,7 @@ mkdirSync(OUT_DIR, { recursive: true });
 function normalizeSvg(file) {
   const svg = readFileSync(file, "utf8");
   const tag = /<svg[^>]*>/.exec(svg);
-  if (!tag) throw new Error("无法读取 SVG 根节点: " + file);
+  if (!tag) throw new Error("Cannot read SVG root element: " + file);
   const w = / width="([\d.]+)(?:px)?"/.exec(tag[0]);
   const h = / height="([\d.]+)(?:px)?"/.exec(tag[0]);
   if (!w || !h) return null;
@@ -66,5 +66,5 @@ for (const file of targets) {
   console.log("[OK] " + base + "  svg=" + (dim ? dim.width + "x" + dim.height : "?") + (png ? "  png=" + TARGET_WIDTH * 2 + "w" : ""));
 }
 
-console.log("\n=== 汇总 ===");
+console.log("\n=== Summary ===");
 for (const r of results) console.log(r.base, r.svg ? r.svg.width + "x" + r.svg.height : "-", r.png ? "png ✓" : "png ✗");

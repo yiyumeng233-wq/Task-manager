@@ -4,18 +4,18 @@ import { redirect } from "next/navigation";
 import type { Role } from "./types";
 
 /**
- * 会话方案：把 uid/name/role 放进一个签名过的串，塞进 httpOnly cookie。
+ * Store uid, name, and role in a signed payload inside an httpOnly cookie.
  *
- * 为什么不用 JWT 库：这里只需要「服务端能验证内容没被改过」，
- * 一个 HMAC-SHA256 就够了，少一个依赖，也少一堆算法选择的坑。
- * 为什么不存 localStorage：那样 JavaScript 能读到 token，一个 XSS 就被偷走；
- * httpOnly 的 cookie 前端脚本拿不到，同时浏览器每次请求自动带上。
+ * The server only needs to verify that the payload has not been modified.
+ * HMAC-SHA256 provides that check without a JWT dependency or algorithm configuration.
+ * Using localStorage would expose the token to page scripts and XSS.
+ * Page scripts cannot read an httpOnly cookie; the browser sends it with requests.
  */
 
 export const SESSION_COOKIE = "tm_session";
 
 const SECRET = process.env.SESSION_SECRET ?? "task-manager-dev-secret-please-change";
-const MAX_AGE_SECONDS = 60 * 60 * 8; // 8 小时
+const MAX_AGE_SECONDS = 60 * 60 * 8; // 8 hours
 
 export type Session = {
   uid: string;
@@ -59,21 +59,21 @@ export async function getSession(): Promise<Session | null> {
   return verifyToken(store.get(SESSION_COOKIE)?.value);
 }
 
-/** 页面里用：没登录直接跳登录页 */
+/** Page guard: redirect unauthenticated visitors to the login page. */
 export async function requireSession(): Promise<Session> {
   const session = await getSession();
   if (!session) redirect("/login");
   return session;
 }
 
-/** 页面里用：不是管理员就回列表，别让通过 URL 直接摸到管理页 */
+/** Page guard: redirect non-administrators to the list, including direct URL visits. */
 export async function requireAdmin(): Promise<Session> {
   const session = await requireSession();
   if (session.role !== "Administrator") redirect("/tasks");
   return session;
 }
 
-/** 只能在一个 Server Action 或 Route Handler 里调用 */
+/** Call only from a Server Action or Route Handler. */
 export async function startSession(session: Omit<Session, "exp">) {
   const store = await cookies();
   const full: Session = { ...session, exp: Date.now() + MAX_AGE_SECONDS * 1000 };

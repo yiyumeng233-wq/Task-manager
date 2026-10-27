@@ -1,52 +1,52 @@
 %%{init: {"flowchart": {"wrappingWidth": 300, "nodeSpacing": 26, "rankSpacing": 40}}}%%
 flowchart LR
-    subgraph CLIENT["① 浏览器"]
+    subgraph CLIENT["1. Browser"]
         direction TB
-        UI1["用户操作<br/>登录 · 筛选 · 提交表单"]
-        UI2["客户端组件（use client）<br/>LoginForm / NewTaskForm / SubmitButton"]
+        UI1["User interactions<br/>Login / filter / submit forms"]
+        UI2["Client components (use client)<br/>LoginForm / NewTaskForm / SubmitButton"]
     end
 
-    subgraph SERVER["② Next.js Server（Node runtime · 单进程）"]
+    subgraph SERVER["2. Next.js Server (single Node process)"]
         direction TB
-        subgraph PAGE["RSC 页面（App Router）"]
+        subgraph PAGE["RSC pages (App Router)"]
             direction TB
             PG1["/ · /login"]
             PG2["/tasks · /tasks/new"]
             PG3["/tasks/[id] · not-found"]
         end
-        subgraph ACTION["Server Actions（lib/actions.ts · 'use server'）"]
+        subgraph ACTION["Server Actions (lib/actions.ts)"]
             direction TB
             AC1["loginAction<br/>logoutAction"]
             AC2["createTaskAction"]
             AC3["transitionAction<br/>deleteTaskAction"]
         end
-        subgraph DOMAIN["领域模块 lib/"]
+        subgraph DOMAIN["Domain modules: lib/"]
             direction TB
-            DM1["auth.ts<br/>HMAC 会话 Cookie"]
-            DM2["password.ts<br/>scrypt 哈希 / 校验"]
-            DM3["workflow.ts<br/>TRANSITIONS 状态表"]
+            DM1["auth.ts<br/>HMAC session cookie"]
+            DM2["password.ts<br/>scrypt hashing / verification"]
+            DM3["workflow.ts<br/>TRANSITIONS status table"]
             DM4["format.ts · types.ts"]
         end
-        STORE["store.ts<br/>唯一读写数据文件的模块"]
+        STORE["store.ts<br/>Only data-file access module"]
     end
 
-    subgraph DATA["③ 数据层（文件系统）"]
+    subgraph DATA["3. Storage (filesystem)"]
         direction TB
         JSON["data/db.json"]
         U["users[]"]
-        T["tasks[]<br/>含 history[]"]
+        T["tasks[]<br/>includes history[]"]
     end
 
-    CROSS["横切<br/>TypeScript strict · Tailwind CSS 4<br/>SESSION_SECRET · DB_PATH"]
+    CROSS["Cross-cutting settings<br/>TypeScript strict · Tailwind CSS 4<br/>SESSION_SECRET · DB_PATH"]
 
     UI1 --> UI2
-    UI2 -->|"表单 POST"| ACTION
-    UI1 -->|"页面导航 / 刷新"| PAGE
-    PAGE -->|"会话守卫 requireSession / requireAdmin"| DM1
-    PAGE -->|"RSC 直接读取"| STORE
-    ACTION -->|"鉴权 / 状态校验 / 查用户（findUserByEmail）"| DOMAIN
-    ACTION -->|"写入"| STORE
-    STORE -->|"读：JSON.parse<br/>写：临时文件 + rename"| JSON
+    UI2 -->|"Form POST"| ACTION
+    UI1 -->|"Navigation / refresh"| PAGE
+    PAGE -->|"Session guards: requireSession / requireAdmin"| DM1
+    PAGE -->|"Direct RSC reads"| STORE
+    ACTION -->|"Authorization / status checks / user lookup"| DOMAIN
+    ACTION -->|"Write"| STORE
+    STORE -->|"Read: JSON.parse<br/>Write: temp file + rename"| JSON
     JSON --- U
     JSON --- T
     CROSS -.-> SERVER

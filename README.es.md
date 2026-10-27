@@ -4,7 +4,7 @@
 
 Un pequeño gestor de tareas creado como proyecto independiente: Next.js, inicio de sesión con dos roles y un flujo de trabajo de cinco estados.
 
-> 📐 **Arquitectura y componentes**: [`docs/架构与组件设计.md`](docs/架构与组件设计.md) — arquitectura general, árbol de componentes, modelo de datos, flujos principales y máquina de estados, con 6 diagramas ([HTML](docs/架构与组件设计.html) / [PDF](docs/架构与组件设计.pdf)). Esta documentación está en chino.
+> 📐 **Arquitectura y componentes**: [`docs/architecture-and-components.md`](docs/architecture-and-components.md) — arquitectura general, árbol de componentes, modelo de datos, flujos principales y máquina de estados, con 6 diagramas ([HTML](docs/architecture-and-components.html) / [PDF](docs/architecture-and-components.pdf)). Esta documentación está en inglés.
 
 ```bash
 npm install
@@ -90,6 +90,6 @@ test/                   pruebas con node:test
 
 ## Notas
 
-Los comentarios del código están en chino, ya que se escribieron para acompañar una guía de Next.js en ese idioma. Los textos de la interfaz están en inglés. El README está disponible en inglés y español.
+Los comentarios del código, los nombres de archivo, la documentación de arquitectura y los textos de la interfaz están en inglés. El README está disponible en inglés y español.
 
 Las pruebas configuran `DB_PATH` para utilizar un archivo temporal, de modo que nunca modifican `data/db.json`.

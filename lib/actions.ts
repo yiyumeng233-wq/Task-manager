@@ -15,7 +15,7 @@ import { canTransition, isTaskStatus } from "./workflow";
 
 export type FormState = { error: string } | { error: null };
 
-/* ---------------------------------- 认证 ---------------------------------- */
+/* ---------------------------------- Authentication ---------------------------------- */
 
 export async function loginAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const email = String(formData.get("email") ?? "").trim();
@@ -27,7 +27,7 @@ export async function loginAction(_prev: FormState, formData: FormData): Promise
 
   const user = findUserByEmail(email);
 
-  // 用户不存在和密码错误给同一句提示，避免泄露「这个邮箱注册过」
+  // Use the same error for an unknown email and a wrong password to avoid revealing registered accounts.
   if (!user || !verifyPassword(password, user.passwordHash)) {
     return { error: "Invalid email or password." };
   }
@@ -41,13 +41,13 @@ export async function logoutAction() {
   redirect("/login");
 }
 
-/* ---------------------------------- 任务 ---------------------------------- */
+/* ---------------------------------- Tasks ---------------------------------- */
 
 export async function createTaskAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const session = await getSession();
   if (!session) redirect("/login");
 
-  // 权限判定必须在服务端：前端藏按钮只是体验，不是安全边界
+  // Enforce permissions on the server; hiding buttons only improves usability.
   if (session.role !== "Administrator") {
     return { error: "Only an Administrator can create tasks." };
   }
@@ -69,9 +69,9 @@ export async function createTaskAction(_prev: FormState, formData: FormData): Pr
 }
 
 /**
- * 状态流转。这里是整套逻辑的收口：
- * 先验身份 → 再验权限 → 再验这条流转合不合法 → 最后才落库。
- * 有任何一步不过，直接回错误，不修改数据。
+ * Central entry point for status transitions:
+ * validate the session, check permissions, validate the transition, then persist.
+ * If any check fails, return an error without changing data.
  */
 export async function transitionAction(formData: FormData) {
   const session = await getSession();

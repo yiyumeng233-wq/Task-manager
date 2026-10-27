@@ -1,31 +1,31 @@
 erDiagram
-    TASKS ||--|{ TASK_EVENTS : "history[]（内嵌数组，非独立表）"
+    TASKS ||--|{ TASK_EVENTS : "history[] (embedded array, not a table)"
 
     USERS {
         string id PK "u_admin / u_viewer"
-        string name "显示名"
-        string email UK "登录名，忽略大小写"
-        string passwordHash "scrypt：salt:hash"
+        string name "Display name"
+        string email UK "Case-insensitive login"
+        string passwordHash "scrypt: salt:hash"
         string role "Administrator | Viewer"
     }
 
     TASKS {
-        string id PK "T-001 递增（取最大数字 +1）"
-        string title "仅 action 层校验 >= 4 字符"
-        string description "仅 action 层校验 >= 10 字符"
-        string assignee "自由文本；空则落 Unassigned"
+        string id PK "T-001 (maximum number + 1)"
+        string title "Action validates at least 4 characters"
+        string description "Action validates at least 10 characters"
+        string assignee "Free text; defaults to Unassigned"
         string status "Pending | Approve | To Do | Done | Cancelled"
-        string createdBy "姓名，非外键（可能是非用户姓名）"
+        string createdBy "Name string, not a foreign key"
         string createdAt "ISO 8601"
-        string updatedAt "ISO 8601，列表按其倒序"
-        array history "TaskEvent[]，每次流转追加"
+        string updatedAt "ISO 8601; list sorted descending"
+        array history "TaskEvent[]; append on transition"
     }
 
     TASK_EVENTS {
-        string at "ISO 时间"
-        string from "来源状态；创建时为 null"
-        string to "目标状态"
-        string by "操作人姓名"
-        string note "备注（运行期恒为空，仅种子有值）"
+        string at "ISO timestamp"
+        string from "Source status; null on creation"
+        string to "Target status"
+        string by "Actor name"
+        string note "Note (seed values only; empty at runtime)"
     }
 

@@ -17,7 +17,7 @@ type Props = {
   pendingLabel?: string;
   variant?: keyof typeof VARIANTS;
   className?: string;
-  /** 传了就弹一次确认，用浏览器原生 confirm，够用且不引组件库 */
+  /** When provided, ask for confirmation using the native browser dialog. */
   confirmText?: string;
 };
 

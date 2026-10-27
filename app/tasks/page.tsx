@@ -22,11 +22,11 @@ const FLASH: Record<string, { tone: "ok" | "error"; text: string }> = {
 function isStatus(value: string | undefined): value is TaskStatus {
   return !!value && (TASK_STATUSES as readonly string[]).includes(value);
 }
-//每次用户访问http://localhost:3000/tasks的时候，我们的服务器会启动这个脚本，函数是TasksPage
+// Render the task list on the server for each request to /tasks.
 export default async function TasksPage({ searchParams }: { searchParams: SearchParams }) {
-  //定义一些变量，读取一些数据
+  // Read the session, query parameters, and task data.
 
-  //调用了requireSession()函数，拿到了用户的session信息，把这个信息存储在名字叫session的变量中。
+  // Require an authenticated session before loading task data.
   const session = await requireSession();
   // const session = {
   //   "name":"Admin",
@@ -50,7 +50,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Search
     { key: "all", label: "All", count: all.length },
     ...TASK_STATUSES.map((s) => ({ key: s, label: STATUS_META[s].label, count: counts[s] ?? 0 })),
   ];
-  // 返回
+  // Render the task list.
   return (
     <div className="min-h-screen">
       <TopBar session={session} />

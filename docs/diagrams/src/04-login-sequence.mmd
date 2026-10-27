@@ -1,32 +1,32 @@
 sequenceDiagram
     autonumber
-    actor U as 用户
-    participant LF as LoginForm（client）
-    participant AC as loginAction（server）
+    actor U as User
+    participant LF as LoginForm (client)
+    participant AC as loginAction (server)
     participant ST as store.ts
     participant PW as password.ts
     participant AU as auth.ts
-    participant PG as /tasks 页面（RSC）
+    participant PG as /tasks page (RSC)
 
-    U->>LF: 输入邮箱 + 口令（Demo 账号可一键填充）
-    LF->>AC: 表单提交（useActionState）
-    AC->>AC: 必填校验
-    alt 缺字段
+    U->>LF: Enter email and password (demo autofill available)
+    LF->>AC: Submit form (useActionState)
+    AC->>AC: Validate required fields
+    alt Missing fields
         AC-->>LF: return { error: "Email and password are required." }
-        LF-->>U: 表单内红色错误提示
-    else 字段齐全
+        LF-->>U: Show inline form error
+    else All fields present
         AC->>ST: findUserByEmail(email.trim().toLowerCase())
         ST-->>AC: User | null
-        alt 用户不存在
+        alt User not found
             AC-->>LF: return { error: "Invalid email or password." }
-        else 用户存在
+        else User found
             AC->>PW: verifyPassword(password, passwordHash)
             PW-->>AC: true / false
-            alt 口令错误
+            alt Wrong password
                 AC-->>LF: return { error: "Invalid email or password." }
-            else 校验通过
+            else Password verified
                 AC->>AU: startSession({ uid, name, role })
-                AU-->>AC: 写入 httpOnly Cookie（HMAC 签名，8h）
+                AU-->>AC: Set httpOnly cookie (HMAC-signed, 8h)
                 AC->>PG: redirect("/tasks")
             end
         end
@@ -34,6 +34,6 @@ sequenceDiagram
     PG->>AU: requireSession() → verifyToken(cookie)
     AU-->>PG: Session
     PG->>ST: listTasks()
-    ST-->>PG: Task[]（按 updatedAt 倒序）
-    PG-->>U: 渲染任务列表（按角色显示操作入口）
+    ST-->>PG: Task[] (updatedAt descending)
+    PG-->>U: Render tasks and role-based actions
 

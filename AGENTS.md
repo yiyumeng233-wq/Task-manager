@@ -1,7 +1,8 @@
-# 项目协作约定
+# Project collaboration rules
 
-- 用户显示姓名使用 `Yuheng Yang`；产品名称使用 `Task Manager`。界面、演示账号、文档与截图保持一致，不引入公司名称或公司标识。
-- 每次完成用户要求的项目修改后，执行与修改相关的验证，并更新 `CHANGELOG.md`。
-- 将每个完整、可验证的改动提交为含义明确的 Git commit，随后推送到 GitHub 的当前跟踪分支，以保留可追踪的版本记录。
-- 不提交依赖、构建产物、本地数据库、真实账号凭据或环境密钥；不覆盖其他人的未提交修改，不强制推送或改写历史。
-- 若验证、认证或推送失败，报告实际状态，不声称已同步。
+- Use `Yuheng Yang` as the displayed user name and `Task Manager` as the product name. Keep the interface, demo accounts, documentation, and screenshots consistent and free of company branding.
+- Use English for source comments, test descriptions, documentation, diagram labels, and file names. Preserve the explicitly requested Spanish README.
+- Validate each requested project change and update `CHANGELOG.md` before committing.
+- Create a meaningful Git commit for each complete, verified change, then push it to the current tracked GitHub branch to preserve version history.
+- Do not commit dependencies, build artifacts, local databases, real account credentials, or environment secrets. Do not overwrite other people's uncommitted changes, force push, or rewrite history without explicit user authorization.
+- If validation, authentication, or pushing fails, report the actual status and do not claim that the repository is synchronized.

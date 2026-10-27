@@ -20,3 +20,10 @@
 - Rebuilt all published commits to remove legacy company branding from commit messages and historical file contents, including screenshots and the architecture PDF.
 - Preserved the sequence of changes and refreshed references to the rewritten commits.
 - Performed the history rewrite and guarded force push at the user's explicit request.
+
+### English source and documentation
+
+- Translated all Chinese source comments, test descriptions, assertion messages, project instructions, and rendering-tool messages into English.
+- Renamed architecture documents to architecture-and-components and translated the full documentation and all six diagram sources.
+- Regenerated English SVG/PNG diagrams and HTML/PDF exports, and updated links in both README languages.
+- Added an optional renderer path setting and excluded local documentation-tool installations from Git.

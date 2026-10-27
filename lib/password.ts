@@ -1,9 +1,9 @@
 import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 
 /**
- * 存的是 "salt:hash"，不存明文。
- * scrypt 是 Node 自带的密钥派生函数，比 md5/sha256 直接散列慢得多，
- * 暴力破解成本高，而且不需要引入 bcrypt 这类需要编译的依赖。
+ * Store "salt:hash", never the plaintext password.
+ * Node provides scrypt as a key derivation function that is slower than plain MD5/SHA-256 hashing.
+ * It increases brute-force cost without a dependency that requires native compilation.
  */
 export function hashPassword(password: string, salt = randomBytes(16).toString("hex")) {
   const hash = scryptSync(password, salt, 32).toString("hex");
@@ -18,6 +18,6 @@ export function verifyPassword(password: string, stored: string) {
   const expected = Buffer.from(hash, "hex");
   if (candidate.length !== expected.length) return false;
 
-  // 固定时间比较，避免根据响应时间猜出密码
+  // Compare in constant time to reduce password timing leaks.
   return timingSafeEqual(candidate, expected);
 }

@@ -3,50 +3,50 @@ import { describe, it } from "node:test";
 import { nextStatuses, canTransition, isTerminal, isTaskStatus } from "../lib/workflow";
 import { TASK_STATUSES } from "../lib/types";
 
-describe("状态流转规则", () => {
-  it("新任务只能被批准或取消", () => {
+describe("Status transition rules", () => {
+  it("allows a pending task to be approved or cancelled", () => {
     assert.deepEqual([...nextStatuses("Pending")], ["Approve", "Cancelled"]);
   });
 
-  it("主流程一路走到底", () => {
+  it("supports the complete main workflow", () => {
     assert.ok(canTransition("Pending", "Approve"));
     assert.ok(canTransition("Approve", "To Do"));
     assert.ok(canTransition("To Do", "Done"));
   });
 
-  it("不能跳步", () => {
+  it("rejects skipped workflow steps", () => {
     assert.equal(canTransition("Pending", "Done"), false);
     assert.equal(canTransition("Pending", "To Do"), false);
     assert.equal(canTransition("Approve", "Done"), false);
   });
 
-  it("不能倒退", () => {
+  it("rejects backward transitions", () => {
     assert.equal(canTransition("Approve", "Pending"), false);
     assert.equal(canTransition("To Do", "Approve"), false);
     assert.equal(canTransition("Done", "To Do"), false);
   });
 
-  it("Done 和 Cancelled 是终态", () => {
+  it("treats Done and Cancelled as terminal states", () => {
     assert.ok(isTerminal("Done"));
     assert.ok(isTerminal("Cancelled"));
     assert.equal(nextStatuses("Done").length, 0);
   });
 
-  it("每个状态都在流转表里，没有漏掉的", () => {
+  it("defines transitions for every status", () => {
     for (const status of TASK_STATUSES) {
-      assert.ok(Array.isArray(nextStatuses(status)), `${status} 缺少流转定义`);
+      assert.ok(Array.isArray(nextStatuses(status)), `${status} has no transition definition`);
     }
   });
 
-  it("流转目标里不会出现未知状态", () => {
+  it("uses only known statuses as transition targets", () => {
     for (const status of TASK_STATUSES) {
       for (const target of nextStatuses(status)) {
-        assert.ok(isTaskStatus(target), `${target} 不是合法状态`);
+        assert.ok(isTaskStatus(target), `${target} is not a valid status`);
       }
     }
   });
 
-  it("拒绝了来自表单的伪造状态", () => {
+  it("rejects forged status values from forms", () => {
     assert.equal(isTaskStatus("Deleted"), false);
     assert.equal(isTaskStatus(""), false);
     assert.equal(isTaskStatus(null), false);

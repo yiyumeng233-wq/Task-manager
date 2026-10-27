@@ -2,14 +2,14 @@ import type { TaskStatus } from "./types";
 import { TASK_STATUSES } from "./types";
 
 /**
- * 状态流转表 —— 整个应用里唯一一处允许的状态变化定义。
- * 表单按钮、服务端校验、测试用例都从这个表读，改规则只改这里。
+ * Transition table: the single source of truth for allowed status changes.
+ * Form buttons, server validation, and tests all read this table; change rules here.
  *
  *   Pending  → Approve  → To Do  → Done
  *      ↓         ↓         ↓
  *      └─────────┴─────────┴──→ Cancelled
  *
- * Done 和 Cancelled 是终态，不再往任何地方走。
+ * Done and Cancelled are terminal states with no outgoing transitions.
  */
 export const TRANSITIONS: Record<TaskStatus, readonly TaskStatus[]> = {
   Pending: ["Approve", "Cancelled"],

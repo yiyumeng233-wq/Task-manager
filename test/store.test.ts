@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { before, describe, it } from "node:test";
 
-// 必须在 import store 之前指到临时文件，否则会写坏真实的 data/db.json
+// Set DB_PATH before importing the store so tests never modify the real data/db.json.
 process.env.DB_PATH = path.join(mkdtempSync(path.join(os.tmpdir(), "tm-store-")), "db.json");
 
 type Store = typeof import("../lib/store");
@@ -18,14 +18,14 @@ before(async () => {
   password = await import("../lib/password");
 });
 
-describe("JSON 存储层", () => {
-  it("第一次读取会落一份种子数据", () => {
+describe("JSON storage layer", () => {
+  it("initializes seed data on the first read", () => {
     const tasks = store.listTasks();
     assert.ok(tasks.length >= 5);
     assert.ok(tasks.every((t) => t.id.startsWith("T-")));
   });
 
-  it("密码是散列存的，且能校验通过", () => {
+  it("stores hashed passwords and verifies them correctly", () => {
     const admin = store.findUserByEmail("ADMIN@example.com");
     assert.ok(admin);
     assert.notEqual(admin.passwordHash, "admin123");
@@ -33,7 +33,7 @@ describe("JSON 存储层", () => {
     assert.equal(password.verifyPassword("wrong-password", admin.passwordHash), false);
   });
 
-  it("新建的任务固定从 Pending 开始", () => {
+  it("creates new tasks in Pending", () => {
     const task = store.createTask({
       title: "Write the README",
       description: "Explain how to run it and why the pieces are where they are.",
@@ -47,7 +47,7 @@ describe("JSON 存储层", () => {
     assert.equal(store.getTask(task.id)?.title, "Write the README");
   });
 
-  it("流转会同时更新状态、时间戳和历史", () => {
+  it("updates status, timestamp, and history together on transition", () => {
     const created = store.createTask({
       title: "Move me forward",
       description: "Used by the test to check the transition side effects.",
@@ -65,7 +65,7 @@ describe("JSON 存储层", () => {
     assert.ok(updated.updatedAt >= created.updatedAt);
   });
 
-  it("删除后查不到", () => {
+  it("cannot retrieve a deleted task", () => {
     const created = store.createTask({
       title: "Delete me",
       description: "Only exists to be removed in this test case.",

@@ -4,8 +4,8 @@ import { hashPassword } from "./password";
 import type { Task, TaskStatus, User } from "./types";
 
 /**
- * 存储层。整个应用只有这一个文件碰文件系统，
- * 想换成 SQLite / Postgres，把下面这几个函数换成 SQL 即可，别处不用动。
+ * Storage layer: this is the only application module that accesses the filesystem.
+ * A SQLite/Postgres migration can keep callers behind this interface, with async changes as needed.
  */
 
 const DB_PATH = process.env.DB_PATH ?? path.join(process.cwd(), "data", "db.json");
@@ -15,7 +15,7 @@ type Database = {
   tasks: Task[];
 };
 
-/** 造种子数据用：n 天前的某个时刻 */
+/** Generate a seed timestamp at a specified time n days ago. */
 function at(daysAgo: number, hour: number, minute = 0) {
   const d = new Date();
   d.setDate(d.getDate() - daysAgo);
@@ -177,7 +177,7 @@ function readDb(): Database {
   try {
     return JSON.parse(readFileSync(DB_PATH, "utf8")) as Database;
   } catch {
-    // 第一次运行没有数据文件，落一份种子数据
+    // Initialize seed data when reading or parsing the database fails.
     const db = seed();
     writeDb(db);
     return db;
@@ -186,7 +186,7 @@ function readDb(): Database {
 
 function writeDb(db: Database) {
   mkdirSync(path.dirname(DB_PATH), { recursive: true });
-  // 先写临时文件再 rename，避免写到一半进程退出留下半个 JSON
+  // Write a temporary file, then rename it to avoid leaving partially written JSON.
   const tmp = `${DB_PATH}.tmp`;
   writeFileSync(tmp, JSON.stringify(db, null, 2), "utf8");
   renameSync(tmp, DB_PATH);
