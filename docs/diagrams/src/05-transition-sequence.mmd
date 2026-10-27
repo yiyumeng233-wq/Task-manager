@@ -1,0 +1,44 @@
+sequenceDiagram
+    autonumber
+    actor U as 管理员
+    participant PG as /tasks/[id] 页面（RSC）
+    participant AC as transitionAction（server）
+    participant WF as workflow.ts
+    participant ST as store.ts
+    participant CO as Cookie 会话
+
+    PG->>WF: nextStatuses(task.status)
+    WF-->>PG: 允许的目标状态（按钮 + 表单）
+    U->>AC: 提交表单（隐藏域 id + to）
+    AC->>CO: getSession()
+    alt 未登录
+        AC->>PG: redirect("/login")
+    else 已登录
+        AC->>AC: role !== Administrator ?
+        alt 非管理员
+            AC->>PG: redirect("/tasks/[id]?error=forbidden")
+        else 管理员
+            AC->>WF: isTaskStatus(to)
+            alt 未知状态
+                AC->>PG: redirect("?error=unknown-status")
+            else 合法状态值
+                AC->>ST: getTask(id)
+                ST-->>AC: Task / null
+                alt 任务不存在
+                    AC->>PG: redirect("/tasks?error=not-found")
+                else 任务存在
+                    AC->>WF: canTransition(task.status, to)
+                    alt 非法迁移（按库中真实状态判断）
+                        AC->>PG: redirect("?error=illegal-transition")
+                    else 合法迁移
+                        AC->>ST: transitionTask(id, to, by)
+                        ST->>ST: history.push + status/updatedAt 更新
+                        ST->>ST: writeDb()（临时文件 + rename）
+                        AC->>AC: revalidatePath("/tasks") 等
+                        AC->>PG: redirect("?ok=1")
+                        PG-->>U: 页面重新渲染，按钮集合变化
+                    end
+                end
+            end
+        end
+    end

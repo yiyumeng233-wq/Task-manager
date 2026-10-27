@@ -1,0 +1,41 @@
+{
+  "theme": "default",
+  "fontFamily": "\"Microsoft YaHei\", \"Noto Sans SC\", \"PingFang SC\", \"Segoe UI\", sans-serif",
+  "themeVariables": {
+    "fontFamily": "\"Microsoft YaHei\", \"Noto Sans SC\", \"PingFang SC\", \"Segoe UI\", sans-serif",
+    "fontSize": "15px",
+    "primaryColor": "#E8F1FF",
+    "primaryTextColor": "#12305B",
+    "primaryBorderColor": "#2F6FED",
+    "lineColor": "#4B5563",
+    "secondaryColor": "#F5F7FB",
+    "tertiaryColor": "#FFFFFF",
+    "clusterBkg": "#FBFCFE",
+    "clusterBorder": "#C9D5EA",
+    "edgeLabelBackground": "#FFFFFF"
+  },
+  "flowchart": {
+    "htmlLabels": true,
+    "curve": "basis",
+    "nodeSpacing": 38,
+    "rankSpacing": 42,
+    "useMaxWidth": false
+  },
+  "sequence": {
+    "useMaxWidth": false,
+    "wrap": true,
+    "width": 180,
+    "actorMargin": 55,
+    "messageMargin": 42
+  },
+  "state": {
+    "useMaxWidth": false,
+    "nodeSpacing": 42,
+    "rankSpacing": 45
+  },
+  "er": {
+    "useMaxWidth": false,
+    "minEntityWidth": 100
+  },
+  "themeCSS": ".nodeLabel, .edgeLabel, .cluster-label, .actor, .messageText, .labelText, text { font-family: 'Microsoft YaHei','Noto Sans SC','PingFang SC','Segoe UI',sans-serif; }"
+}

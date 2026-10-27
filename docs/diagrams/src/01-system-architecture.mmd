@@ -1,0 +1,60 @@
+%%{init: {"flowchart": {"wrappingWidth": 300, "nodeSpacing": 26, "rankSpacing": 40}}}%%
+flowchart LR
+    subgraph CLIENT["① 浏览器"]
+        direction TB
+        UI1["用户操作<br/>登录 · 筛选 · 提交表单"]
+        UI2["客户端组件（use client）<br/>LoginForm / NewTaskForm / SubmitButton"]
+    end
+
+    subgraph SERVER["② Next.js Server（Node runtime · 单进程）"]
+        direction TB
+        subgraph PAGE["RSC 页面（App Router）"]
+            direction TB
+            PG1["/ · /login"]
+            PG2["/tasks · /tasks/new"]
+            PG3["/tasks/[id] · not-found"]
+        end
+        subgraph ACTION["Server Actions（lib/actions.ts · 'use server'）"]
+            direction TB
+            AC1["loginAction<br/>logoutAction"]
+            AC2["createTaskAction"]
+            AC3["transitionAction<br/>deleteTaskAction"]
+        end
+        subgraph DOMAIN["领域模块 lib/"]
+            direction TB
+            DM1["auth.ts<br/>HMAC 会话 Cookie"]
+            DM2["password.ts<br/>scrypt 哈希 / 校验"]
+            DM3["workflow.ts<br/>TRANSITIONS 状态表"]
+            DM4["format.ts · types.ts"]
+        end
+        STORE["store.ts<br/>唯一读写数据文件的模块"]
+    end
+
+    subgraph DATA["③ 数据层（文件系统）"]
+        direction TB
+        JSON["data/db.json"]
+        U["users[]"]
+        T["tasks[]<br/>含 history[]"]
+    end
+
+    CROSS["横切<br/>TypeScript strict · Tailwind CSS 4<br/>SESSION_SECRET · DB_PATH"]
+
+    UI1 --> UI2
+    UI2 -->|"表单 POST"| ACTION
+    UI1 -->|"页面导航 / 刷新"| PAGE
+    PAGE -->|"会话守卫 requireSession / requireAdmin"| DM1
+    PAGE -->|"RSC 直接读取"| STORE
+    ACTION -->|"鉴权 / 状态校验 / 查用户（findUserByEmail）"| DOMAIN
+    ACTION -->|"写入"| STORE
+    STORE -->|"读：JSON.parse<br/>写：临时文件 + rename"| JSON
+    JSON --- U
+    JSON --- T
+    CROSS -.-> SERVER
+    classDef client fill:#E8F1FF,stroke:#2F6FED,color:#12305B
+    classDef server fill:#EAF7EE,stroke:#2E9E5B,color:#123B22
+    classDef data fill:#F3EDFF,stroke:#7C4DFF,color:#2A1A55
+    classDef cross fill:#F2F4F7,stroke:#6B7280,color:#2F3540
+    class UI1,UI2 client
+    class PG1,PG2,PG3,AC1,AC2,AC3,DM1,DM2,DM3,DM4,STORE server
+    class JSON,U,T data
+    class CROSS cross

@@ -1,0 +1,33 @@
+%%{init: {"flowchart": {"wrappingWidth": 260, "nodeSpacing": 24, "rankSpacing": 42}}}%%
+flowchart TD
+    L["app/layout.tsx<br/>RootLayout<br/>字体 + globals.css"] --> HOME["app/page.tsx<br/>/ → 按会话重定向"]
+    L --> LOGIN["app/login/page.tsx<br/>LoginPage（RSC）"]
+    L --> TASKS["app/tasks/page.tsx<br/>TasksPage（RSC）"]
+    L --> NEW["app/tasks/new/page.tsx<br/>NewTaskPage（RSC · requireAdmin）"]
+    L --> DETAIL["app/tasks/[id]/page.tsx<br/>TaskDetailPage（RSC）"]
+    L --> NF["app/not-found.tsx<br/>404"]
+
+    LOGIN --> LF["LoginForm<br/>'use client' · useActionState"]
+    TASKS --> TB1["TopBar<br/>（server 组件）"]
+    TASKS --> SB1["StatusBadge<br/>（server 组件）"]
+    TASKS --> BTN1["SubmitButton<br/>'use client' · useFormStatus"]
+    NEW --> TB2["TopBar"]
+    NEW --> NTF["NewTaskForm<br/>'use client' · useActionState"]
+    DETAIL --> TB3["TopBar"]
+    DETAIL --> SB2["StatusBadge"]
+    DETAIL --> BTN2["SubmitButton ×N<br/>每个目标状态一个表单"]
+
+    LF --> A1["loginAction"]
+    NTF --> A2["createTaskAction"]
+    BTN1 --> A3["deleteTaskAction"]
+    BTN2 --> A4["transitionAction / deleteTaskAction"]
+    TB1 --> A5["logoutAction"]
+    TB2 --> A5
+    TB3 --> A5
+
+    classDef page fill:#E8F1FF,stroke:#2F6FED,color:#12305B
+    classDef comp fill:#FFF4E5,stroke:#E08A00,color:#5A3A00
+    classDef act fill:#EAF7EE,stroke:#2E9E5B,color:#123B22
+    class HOME,LOGIN,TASKS,NEW,DETAIL,NF,L page
+    class LF,TB1,SB1,BTN1,TB2,NTF,TB3,SB2,BTN2 comp
+    class A1,A2,A3,A4,A5 act

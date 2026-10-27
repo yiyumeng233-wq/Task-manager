@@ -1,0 +1,27 @@
+stateDiagram-v2
+    direction LR
+    state "Pending 待处理" as PENDING
+    state "Approve 已批准" as APPROVED
+    state "To Do 待办" as TODO
+    state "Done 完成" as DONE
+    state "Cancelled 已取消" as CANCELLED
+
+    [*] --> PENDING : 创建（仅 Administrator）
+    PENDING --> APPROVED : 批准
+    APPROVED --> TODO : 排期进入待办
+    TODO --> DONE : 完成
+    PENDING --> CANCELLED : 取消
+    APPROVED --> CANCELLED : 取消
+    TODO --> CANCELLED : 取消
+    DONE --> [*]
+    CANCELLED --> [*]
+
+    note right of PENDING
+        所有迁移仅 Administrator 可触发
+        Viewer 只读（页面隐藏 + 服务端再校验）
+        每次迁移写入 history（谁/何时/从→到）
+    end note
+    note left of DONE
+        Done / Cancelled 为终态
+        TRANSITIONS 中目标数组为空
+    end note
