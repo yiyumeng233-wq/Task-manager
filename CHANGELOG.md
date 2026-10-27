@@ -12,5 +12,11 @@
 
 ### Earlier changes
 
-- Added English and Spanish READMEs with language links (`f1ebea8`).
-- Initialized the repository and published the application (`9dce7ce`).
+- Added English and Spanish READMEs with language links (`aab80dc`).
+- Initialized the repository and published the application (`fbd38da`).
+
+### History cleanup
+
+- Rebuilt all published commits to remove legacy company branding from commit messages and historical file contents, including screenshots and the architecture PDF.
+- Preserved the sequence of changes and refreshed references to the rewritten commits.
+- Performed the history rewrite and guarded force push at the user's explicit request.
