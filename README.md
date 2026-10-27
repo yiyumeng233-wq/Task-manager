@@ -1,8 +1,10 @@
 # Task Manager
 
+[English](README.en.md) | [Español](README.es.md)
+
 A small task manager built as a standalone project: Next.js, login with two roles, and a five-state workflow.
 
-> 📐 **Architecture & component notes**: [`docs/架构与组件设计.md`](docs/架构与组件设计.md) — overall architecture, component tree, data model, key flows and the state machine, with 6 diagrams ([HTML](docs/架构与组件设计.html) / [PDF](docs/架构与组件设计.pdf)).
+> 📐 **Architecture & component notes**: [`docs/架构与组件设计.md`](docs/架构与组件设计.md) — overall architecture, component tree, data model, key flows and the state machine, with 6 diagrams ([HTML](docs/架构与组件设计.html) / [PDF](docs/架构与组件设计.pdf)). This documentation is in Chinese.
 
 ```bash
 npm install
@@ -88,6 +90,6 @@ test/                   node:test suites
 
 ## Notes
 
-Code comments are in Chinese (written to go with a Chinese-language Next.js walkthrough); UI copy and this README are in English.
+Code comments are in Chinese (written to go with a Chinese-language Next.js walkthrough); UI copy is in English. The README is available in English and Spanish.
 
 Tests point `DB_PATH` at a temp file, so running them never touches `data/db.json`.
