@@ -2,6 +2,9 @@
 
 [English](README.en.md) | [Español](README.es.md)
 
+**Demo en línea:** [Task Manager](https://yuheng-task-manager.yiyumeng233.chatgpt.site). Consulta [la guía de despliegue](docs/deployment.md).
+
+
 Un pequeño gestor de tareas creado como proyecto independiente: Next.js, inicio de sesión con dos roles y un flujo de trabajo de cinco estados.
 
 > 📐 **Arquitectura y componentes**: [`docs/architecture-and-components.md`](docs/architecture-and-components.md) — arquitectura general, árbol de componentes, modelo de datos, flujos principales y máquina de estados, con 6 diagramas ([HTML](docs/architecture-and-components.html) / [PDF](docs/architecture-and-components.pdf)). Esta documentación está en inglés.

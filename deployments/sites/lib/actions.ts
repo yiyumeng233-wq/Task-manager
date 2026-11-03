@@ -1,0 +1,113 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { endSession, getSession, startSession } from "./auth";
+import { verifyPassword } from "./password";
+import {
+  createTask,
+  deleteTask,
+  findUserByEmail,
+  getTask,
+  transitionTask,
+} from "./store";
+import { canTransition, isTaskStatus } from "./workflow";
+
+export type FormState = { error: string } | { error: null };
+
+/* ---------------------------------- Authentication ---------------------------------- */
+
+export async function loginAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  const email = String(formData.get("email") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
+
+  if (!email || !password) {
+    return { error: "Email and password are required." };
+  }
+
+  const user = await findUserByEmail(email);
+
+  // Use the same error for an unknown email and a wrong password to avoid revealing registered accounts.
+  if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    return { error: "Invalid email or password." };
+  }
+
+  await startSession({ uid: user.id, name: user.name, role: user.role });
+  redirect("/tasks");
+}
+
+export async function logoutAction() {
+  await endSession();
+  redirect("/login");
+}
+
+/* ---------------------------------- Tasks ---------------------------------- */
+
+export async function createTaskAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  const session = await getSession();
+  if (!session) redirect("/login");
+
+  // Enforce permissions on the server; hiding buttons only improves usability.
+  if (session.role !== "Administrator") {
+    return { error: "Only an Administrator can create tasks." };
+  }
+
+  const title = String(formData.get("title") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const assignee = String(formData.get("assignee") ?? "").trim();
+
+  if (title.length < 4) {
+    return { error: "Title needs at least 4 characters." };
+  }
+  if (description.length < 10) {
+    return { error: "Description needs at least 10 characters." };
+  }
+
+  const task = await createTask({ title, description, assignee, createdBy: session.name });
+  revalidatePath("/tasks");
+  redirect(`/tasks/${task.id}`);
+}
+
+/**
+ * Central entry point for status transitions:
+ * validate the session, check permissions, validate the transition, then persist.
+ * If any check fails, return an error without changing data.
+ */
+export async function transitionAction(formData: FormData) {
+  const session = await getSession();
+  if (!session) redirect("/login");
+
+  const id = String(formData.get("id") ?? "");
+  const to = String(formData.get("to") ?? "");
+
+  if (session.role !== "Administrator") {
+    redirect(`/tasks/${id}?error=forbidden`);
+  }
+  if (!isTaskStatus(to)) {
+    redirect(`/tasks/${id}?error=unknown-status`);
+  }
+
+  const task = await getTask(id);
+  if (!task) redirect("/tasks?error=not-found");
+
+  if (!canTransition(task.status, to)) {
+    redirect(`/tasks/${id}?error=illegal-transition`);
+  }
+
+  const updated = await transitionTask(id, to, session.name);
+  if (!updated) redirect(`/tasks/${id}?error=illegal-transition`);
+  revalidatePath("/tasks");
+  revalidatePath(`/tasks/${id}`);
+  redirect(`/tasks/${id}?ok=1`);
+}
+
+export async function deleteTaskAction(formData: FormData) {
+  const session = await getSession();
+  if (!session) redirect("/login");
+  if (session.role !== "Administrator") redirect("/tasks?error=forbidden");
+
+  const id = String(formData.get("id") ?? "");
+  await deleteTask(id);
+  revalidatePath("/tasks");
+  redirect("/tasks?ok=deleted");
+}

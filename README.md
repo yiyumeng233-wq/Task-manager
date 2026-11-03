@@ -2,6 +2,9 @@
 
 [English](README.en.md) | [Español](README.es.md)
 
+**Live demo:** [Task Manager](https://yuheng-task-manager.yiyumeng233.chatgpt.site). See the [deployment guide](docs/deployment.md).
+
+
 A small task manager built as a standalone project: Next.js, login with two roles, and a five-state workflow.
 
 > 📐 **Architecture & component notes**: [`docs/architecture-and-components.md`](docs/architecture-and-components.md) — overall architecture, component tree, data model, key flows and the state machine, with 6 diagrams ([HTML](docs/architecture-and-components.html) / [PDF](docs/architecture-and-components.pdf)). This documentation is in English.

@@ -27,3 +27,12 @@
 - Renamed architecture documents to architecture-and-components and translated the full documentation and all six diagram sources.
 - Regenerated English SVG/PNG diagrams and HTML/PDF exports, and updated links in both README languages.
 - Added an optional renderer path setting and excluded local documentation-tool installations from Git.
+
+## 2026-11-03
+
+- Added a public HTTPS deployment backed by Cloudflare D1 persistent storage.
+- Mirrored the independently built hosted edition under deployments/sites, retaining the original local Next.js workflow.
+- Preserved demo roles and workflow, added optimistic transition writes, and kept signing secrets in hosted runtime configuration.
+- Added the live link, deployment instructions, and mobile table scrolling in the hosted edition.
+- Verified both role logins, task creation, transitions, history, refresh persistence, viewer restrictions, and deletion before publication.
+- Repeated the end-to-end checks successfully against the public production URL after repairing the Worker password-derivation limit.

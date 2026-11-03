@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1793704366334,
+      "tag": "0000_fat_silver_sable",
+      "breakpoints": true
+    }
+  ]
+}

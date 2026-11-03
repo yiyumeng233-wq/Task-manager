@@ -6,3 +6,4 @@
 - Create a meaningful Git commit for each complete, verified change, then push it to the current tracked GitHub branch to preserve version history.
 - Do not commit dependencies, build artifacts, local databases, real account credentials, or environment secrets. Do not overwrite other people's uncommitted changes, force push, or rewrite history without explicit user authorization.
 - If validation, authentication, or pushing fails, report the actual status and do not claim that the repository is synchronized.
+- The public hosted edition is documented in `docs/deployment.md` and mirrored under `deployments/sites/`. Reuse its existing Site identity. Root application changes do not automatically publish the hosted edition; validate and deploy the Site explicitly, then refresh the GitHub mirror.
